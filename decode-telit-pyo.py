@@ -48,7 +48,7 @@ with open(sys.argv[1]) as f:
 f.closed
 
 for size, name, hex_data in chunks(contents.split(), 3):
-  size = int(size[:-1])
+  size = int(size)
   binary_data = unhexlify(hex_data)
   if len(binary_data) != size:
     print("ERROR - " + name + " was wrong size, " + str(len(binary_data)) +

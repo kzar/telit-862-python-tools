@@ -59,19 +59,20 @@ def list_files(extension):
   error, response = at_command('AT#LSCRIPT')
   if error:
     return []
-  # Munge the response it to something more useful
-  # (No regexp on the Telit remember!)
-  junk = response.replace('\n', '').replace('\r', '').replace('#LSCRIPT: ', '').split('"')[1:-1]
+  # Parse AT#LSCRIPT response into list of files and sizes
+  entries = response.replace('#LSCRIPT: ', '').replace('"', '').split()[:-4]
+
   files = []
   # Return a list of files
-  for i in range(0, len(junk) - 1, 2):
-    if junk[i].endswith(extension):
-      files.append([junk[i], int(junk[i + 1][1:])])
+  for entry in entries:
+    name, size = entry.split(',')
+    if name.endswith(extension):
+      files.append([name, size])
   return files
 
 for filename, size in list_files('.pyo'):
   f = open(filename, 'r')
-  print(str(size) + ', ' + filename + '\n')
+  print(str(size) + ' ' + filename + '\n')
   while 1:
     data = f.read(512)
     if not data:
