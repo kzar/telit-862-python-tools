@@ -12,15 +12,16 @@
 # For more details view my blog post:
 #   http://kzar.co.uk/blog/view/embedded-development-setup-with-macbook
 #
-# I've had to add another layer of complexity as the Telit unit can't handle
-# files over about 7 or 8k with the AT#WSCRIPT command. To work around this
-# the script chunks the file and adds a delay after each part is sent.
-# (What's more I noticed that using DSCRIPT without quotes is more reliable and
-#  AT+FLO=0 helps when sending larger files!)
+# I found that the Telit's AT#WSCRIPT command  starts loosing bytes after
+# about 7kb but a 10 second pause helps give the poor little bugger a chance
+# to catch up.
 #
 # To save (a lot) of time I've added the ability to compile .pyo files
 # before the script is transmited. Install TelitPy1.5.2+_v4.1.exe using
-# Wine and provide the path as an argument. (See usage notes.)
+# Wine and provide the path as an argument, see usage notes for more details.
+# (Also, apply telit862-python-crosscompile-fix.patch to
+# Python\Lib\py-compile.py if you want the cross compiled files to be identical
+# to unit compiled ones.)
 #
 #
 # Copyright 2011 Dave Barker
@@ -60,9 +61,7 @@ def load_python(screen_name, script_name, run=True, telit_python_path=False):
     tidy_up()
 
     # Deal with cross-compilation if we need to
-    if telit_python_path and not bool(run):
-        # Make sure we open as binary later!
-        open_as = 'rb'
+    if telit_python_path:
         # Copy the script to the temporary store
         shutil.copyfile(script_path, TEMP_STORE + '/' + script_name)
         # Compile our .pyo
@@ -71,41 +70,21 @@ def load_python(screen_name, script_name, run=True, telit_python_path=False):
                 '-v -S -OO "' + telit_python_path + '/Lib/Dircompile.py" ' + script_name)
         compiled_script_path = TEMP_STORE + '/' + script_name + 'o'
         # Make sure it exists
-        print compiled_script_path
         if os.path.exists(compiled_script_path):
             script_name = script_name + 'o'
             script_path = compiled_script_path
         else:
             print("Failed to compile script :(")
             exit()
-    else:
-        # If it's just a .py we should open as ascii
-        open_as = 'r'
 
-    # Number of chunks we're splitting the script into
-    temporary_files = 0
-    # Total number of bytes for the script
-    script_length = 0
     # Split file name from extension
     script_base_name, script_type = os.path.splitext(script_name)
 
-    # Load our script
-    with open(script_path, open_as) as f:
-        while 1:
-            data = f.read(CHUNK_LIMIT)
-            if not data:
-                break
-            # Increase our file count
-            temporary_files += 1
-            # Fix the line terminators
-            if script_type == '.py':
-                data = data.replace('\n', '\r\n').replace('\r\r', '\r')
-            # Increase our script_length
-            script_length += len(data)
-            # Write our chunk
-            with open(TEMP_STORE + "/" + str(temporary_files), 'w') as f_out:
-                f_out.write(data)
-            f_out.closed
+    with open(script_path, 'r') as f:
+        data = f.read()
+
+        if script_type == '.py':
+            data = data.replace('\n', '\r\n').replace('\r\r', '\r')
     f.closed
 
     # Send the delete commands, clear existing files
@@ -114,16 +93,27 @@ def load_python(screen_name, script_name, run=True, telit_python_path=False):
 
     # Send the load code command
     send_to_screen(screen_name, 'AT#WSCRIPT="' + script_name + '",'
-                   + str(script_length))
-    # Have the file sent over
-    for i in range(1, temporary_files + 1):
-        screen_read_file(screen_name, TEMP_STORE + "/" + str(i), 10)
+                  + str(len(data)))
+
+    screen_send_raw_string(screen_name, data, CHUNK_LIMIT, 10)
+
     # Should we execute the code too?
     if bool(run):
         # Send the enable command
         send_to_screen(screen_name, 'AT#ESCRIPT="' + script_name + '"')
         # Finaly send the execute command
         send_to_screen(screen_name, 'AT#EXECSCR')
+
+# Please forgive me for this function, I'll leave it as an excersise for the
+# reader to fully grok the insanity here within..
+def screen_send_raw_string(screen_name, string, chunk_size, delay):
+    i = 0
+    for c in string:
+        run_cmd("screen -S " + screen_name + " -X digraph " + str(oct(ord(c))).ljust(4, '\r'))
+        i += 1
+        if i > chunk_size:
+            i = 0
+            time.sleep(delay)
 
 def tidy_up():
     # Clear all the temp files
@@ -152,7 +142,7 @@ def screen_read_file(screen_name, file_path, delay=1):
     time.sleep(delay)
 
 def send_to_screen(screen_name, message, delay=0.5):
-    message = message.replace("'", "\\'") + '\r'
+    message = message.replace("'", "\\'").replace('"', '\\"') + '\r'
     run_cmd("screen -S " + screen_name + " -X stuff $'" + message + "'")
     time.sleep(delay)
 
