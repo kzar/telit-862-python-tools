@@ -11,7 +11,15 @@ rs-send-python.py
 
 Useful script to send Python code to the Telit unit via GNU screen. Supports
 uploading plain sourcecode and cross-compilation using TelitPy1.5.2+_v4.1.exe 
-and Wine. (See the usage help and also header of the file for more details.)
+and Wine. Handles files above 7kb and (if patch below) is applied produces
+identical .pyo's to the unit itself.
+
+Allows for a nice workflow as you can type commands into the GNU Screen session
+and then, without closing things, send files using this script. Just requires
+Python, GNU Screen and optionally Telit Python so it's easy to get running on
+most systems.
+
+(See the usage help and also header of the file for more details.)
 
 telit-pyo.py
 ------------
