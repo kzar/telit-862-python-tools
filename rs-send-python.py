@@ -133,14 +133,6 @@ def run_cmd(command):
                             stdout=subprocess.PIPE)
     proc.wait()
 
-def screen_read_file(screen_name, file_path, delay=1):
-    # Tell screen to read file into paste buffer
-    run_cmd("screen -S " + screen_name + " -X readbuf " + file_path)
-    # Have screen paste the contents
-    run_cmd("screen -S " + screen_name + " -X paste .")
-    # Wait for a moment (default 1 second)
-    time.sleep(delay)
-
 def send_to_screen(screen_name, message, delay=0.5):
     message = message.replace("'", "\\'").replace('"', '\\"') + '\r'
     run_cmd("screen -S " + screen_name + " -X stuff $'" + message + "'")
@@ -166,4 +158,3 @@ else:
     print " - script name should be in current directory, paths are not handled"
     print " - make sure that the TEMP_STORE path set at top of the script looks OK"
     print " - compiling requires Telit Python, install with Wine and then provide path"
-
