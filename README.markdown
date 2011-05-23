@@ -25,3 +25,11 @@ decode-telit-pyo.py
 Lovely script that takes the output of telit-pyo.py and reconstructs all of
 the pyo files. It checks the length against what was reported to highlight
 problems.
+
+telit862-python-crosscompile-fix.patch
+--------------------------------------
+
+Patch for the /Python/Lib/py-compile.py cross compiling script contained in TelitPy v4.1.
+Not vital but it replaces the timestamp with FF's as the Telit unit itself does, I only
+noticed the difference when I was troubleshooting a problem transmitting binary files
+accross the serial line.

@@ -1,0 +1,45 @@
+*** /Users/kzar/Desktop/py_compile.py	2011-05-22 16:34:31.000000000 +0100
+--- /Users/kzar/.wine/drive_c/Program Files/Python/Lib/py_compile.py	2007-01-22 10:19:16.000000000 +0000
+***************
+*** 45,50 ****
+--- 45,54 ----
+      """
+      import os, marshal, __builtin__
+      f = open(file)
++     try:
++         timestamp = long(os.fstat(f.fileno())[8])
++     except AttributeError:
++         timestamp = long(os.stat(file)[8])
+      codestring = f.read()
+      f.close()
+      if codestring and codestring[-1] != '\n':
+***************
+*** 119,125 ****
+              cfile = ""            
+          cfile = file + (__debug__ and 'c' or 'o')
+      fc = open(cfile, 'wb')
+!     fc.write('\0\0\0\0\xFF\xFF\xFF\xFF')
+      marshal.dump(codeobject, fc)
+      fc.flush()
+      fc.seek(0, 0)
+--- 123,130 ----
+              cfile = ""            
+          cfile = file + (__debug__ and 'c' or 'o')
+      fc = open(cfile, 'wb')
+!     fc.write('\0\0\0\0')
+!     wr_long(fc, timestamp)
+      marshal.dump(codeobject, fc)
+      fc.flush()
+      fc.seek(0, 0)
+***************
+*** 132,135 ****
+      return 0
+  
+  if __name__ == "__main__":
+!   compile(sys.argv[1])
+--- 137,140 ----
+      return 0
+  
+  if __name__ == "__main__":
+!   compile(sys.argv[1])
+\ No newline at end of file
