@@ -16,7 +16,7 @@ identical .pyo's to the unit itself.
 
 Allows for a nice workflow as you can type commands into the GNU Screen session
 and then, without closing things, send files using this script. Just requires
-Python, GNU Screen and optionally Telit Python so it's easy to get running on
+Python, GNU Screen and optionally Wine + Telit Python so it's easy to get running on
 most systems.
 
 (See the usage help and also header of the file for more details.)
