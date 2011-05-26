@@ -41,7 +41,7 @@
 
 import os, time, sys, subprocess, shutil
 
-TEMP_STORE = "/tmp/rs-send-python"
+TEMP_STORE = "/tmp/telit-send-python"
 CHUNK_LIMIT = 7000
 
 def load_python(screen_name, script_name, run=True, telit_python_path=False):
@@ -141,7 +141,7 @@ def send_to_screen(screen_name, message, delay=0.5):
 if len(sys.argv) in [3, 4, 5]:
     load_python(*sys.argv[1:])
 else:
-    print "Usage: rs-send-python.py screen_name script_name [execute? telit_python_path]"
+    print "Usage: telit-send-python.py screen_name script_name [execute? telit_python_path]"
     print "  - screen_name = GNU Screen target terminal."
     print "  - script_name = File name for Python to send."
     print "  - execute? = Optional boolean, true executes after write, false doesn't."
@@ -151,8 +151,8 @@ else:
     print "      sent."
     print ""
     print "Example usage:"
-    print "  > screen -S rs -T vt100 /dev/tty.usbserial 115200,crtscts,-parity,-cstopb"
-    print "  > rs-send-python.py rs example.py"
+    print "  > screen -S telit -T vt100 /dev/tty.usbserial 115200,crtscts,-parity,-cstopb"
+    print "  > telit-send-python.py telit example.py"
     print ""
     print "Notes:"
     print " - script name should be in current directory, paths are not handled"
