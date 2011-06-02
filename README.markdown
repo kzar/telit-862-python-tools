@@ -41,3 +41,9 @@ Patch for the /Python/Lib/py-compile.py cross compiling script contained in Teli
 Not vital but it replaces the timestamp with FF's as the Telit unit itself does, I only
 noticed the difference when I was troubleshooting a problem transmitting binary files
 accross the serial line.
+
+repl.py
+-------
+
+Python REPL (evaluate Python interactively) for the Telit module. Handy for testing things
+although it's power is limited by the eval() function's limitations.
