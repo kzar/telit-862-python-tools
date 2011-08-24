@@ -43,6 +43,7 @@ import os, time, sys, subprocess, shutil
 
 TEMP_STORE = "/tmp/telit-send-python"
 CHUNK_LIMIT = 7000
+DEPLOY_PATH_RELATIVE = "../bin"
 
 def load_python(screen_name, script_name, run=True, telit_python_path=False):
     # Check the extension of our file
@@ -60,11 +61,15 @@ def load_python(screen_name, script_name, run=True, telit_python_path=False):
     # Set our temp storage directory up
     tidy_up()
 
+    # Stop UTF-8 messing up our characters
+    run_cmd('unset LANG')
+
     # Deal with cross-compilation if we need to
     if telit_python_path:
         # Copy the script to the temporary store
         shutil.copyfile(script_path, TEMP_STORE + '/' + script_name)
         # Compile our .pyo
+        cwd = os.getcwd()
         os.chdir(TEMP_STORE)
         run_cmd('wine ' + telit_python_path + '/python.exe ' +
                 '-v -S -OO "' + telit_python_path + '/Lib/Dircompile.py" ' + script_name)
@@ -73,6 +78,10 @@ def load_python(screen_name, script_name, run=True, telit_python_path=False):
         if os.path.exists(compiled_script_path):
             script_name = script_name + 'o'
             script_path = compiled_script_path
+            # Copy the pyo to our deploy directory
+            deploy_path = cwd + '/' + DEPLOY_PATH_RELATIVE + '/' + script_name
+            if os.path.exists(deploy_path):
+                shutil.copyfile(compiled_script_path, deploy_path)
         else:
             print("Failed to compile script :(")
             exit()
@@ -109,7 +118,7 @@ def load_python(screen_name, script_name, run=True, telit_python_path=False):
 def screen_send_raw_string(screen_name, string, chunk_size, delay):
     i = 0
     for c in string:
-        run_cmd("screen -S " + screen_name + " -X digraph " + str(oct(ord(c))).ljust(4, '\r'))
+        run_cmd("screen -S " + screen_name + " -X digraph " + oct(ord(c)) + "\r")
         i += 1
         if i > chunk_size:
             i = 0
