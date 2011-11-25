@@ -54,5 +54,6 @@ bulkdownload
 Script to automate Python transfer if you're using the standard Telit tools on a windows machine.
 
  - Put bulkdownload.py in C:\Program Files\Python\Lib
- - Put bulkdownload.bat in a directory containing pyo files
- - Click the batch file to have all pyo files in the same directory downloaded
+ - Put bulkdownload.bat in a directory containing pyo or py files
+ - Click the batch file to have all the py files in the same directory compiled to pyo and
+   then all the pyo files downloaded
