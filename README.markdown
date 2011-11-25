@@ -2,7 +2,7 @@ About
 -----
 
 This repository serves to group together a bunch of scripts I've been writing
-to assist in the development process with the [Telit 862GPS](http://www.telit.com/en/products/gsm-gprs.php?p_ac=show&p=7). They are all designed for Linux.
+to assist in the development process with the [Telit 862GPS](http://www.telit.com/en/products/gsm-gprs.php?p_ac=show&p=7). They are all designed for Linux with the exception of the bulkdownload script which is for Windows.
 
 I recommend also checking out [my blog post on the 862](http://kzar.co.uk/blog/view/embedded-development-setup-with-macbook) for some more details.
 
