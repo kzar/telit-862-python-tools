@@ -1,0 +1,19 @@
+*** original-directDwnld.py	2011-11-25 16:08:59.000000000 +0000
+--- directDwnld.py	2011-11-28 14:48:16.000000000 +0000
+***************
+*** 123,129 ****
+          print ".",
+          res = res + mdmser.read()
+      if(res.find('OK') != -1):
+!       win32ui.MessageBox("File Correctly Downloaded!", "Completed")
+      elif(res.find('ERROR') != -1):
+        win32ui.MessageBox("Error in Downloading File!", "Error")
+      else:
+--- 123,129 ----
+          print ".",
+          res = res + mdmser.read()
+      if(res.find('OK') != -1):
+!       time.sleep(1)
+      elif(res.find('ERROR') != -1):
+        win32ui.MessageBox("Error in Downloading File!", "Error")
+      else:
